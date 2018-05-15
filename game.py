@@ -16,7 +16,7 @@ class Game:
         self.clock = pygame.time.Clock()
 
         # init obstacle positions
-        self.obstacle_pos = [random.randint(1, 1000) for i in range(20)]
+        self.obstacle_pos = [random.randint(i * 200, (i + 1) * 200) for i in range(20)]
         self.obstacle_pos.sort()
         self.curr_obstacles = []
         self.pos_counter = 0
@@ -47,7 +47,7 @@ class Game:
         self.pos_counter += 1
         if self.pos_counter in self.obstacle_pos:
             self.curr_obstacles.append(0)
-        if self.pos_counter == 1000:
+        if self.pos_counter == 4000:
             self.pos_counter = 0
 
         # increment all obstacle positions by 1
