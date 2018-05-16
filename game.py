@@ -24,6 +24,9 @@ class Game:
     def setup_game(self):
         self.field = Field(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
 
+    def is_over(self):
+        return self.field.check_is_over()
+
     def handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -34,6 +37,8 @@ class Game:
             self._done = True
         if pressed[pygame.K_SPACE]:
             self.field.jump()
+        if pressed[pygame.K_r] and self.is_over():
+            self.setup_game()
 
     def update_screen(self):
         self.screen.fill(colors.BLACK)
@@ -52,8 +57,10 @@ class Game:
     def start(self):
         while not self._done:
             self.handle_events()
-            self.update_screen()
-            self.on_update()
+
+            if not self.is_over():
+                self.update_screen()
+                self.on_update()
 
     def _draw_shape(self, shape):
         if isinstance(shape, Line):

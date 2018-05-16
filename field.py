@@ -34,16 +34,19 @@ class Field(object):
         '''
         self.pos_counter += 1
         if self.pos_counter in self.obstacle_pos:
-            self.curr_obstacles.append(0)
+            new_obs = Rectangle(colors.WHITE, self.SCREEN_WIDTH, 
+                                self.GROUND_Y - self.BLOCK_HEIGHT, self.BLOCK_WIDTH, 
+                                self.BLOCK_HEIGHT)
+            self.curr_obstacles.append(new_obs)
         if self.pos_counter == 4000:
             self.pos_counter = 0
 
         # increment all obstacle positions by 1
-        for ind in range(len(self.curr_obstacles)):
-            self.curr_obstacles[ind] += 1
+        for obs in self.curr_obstacles:
+            obs.x -= 1
 
         # delete out of range positions
-        if self.curr_obstacles and self.curr_obstacles[0] > self.SCREEN_WIDTH + self.BLOCK_WIDTH:
+        if self.curr_obstacles and self.curr_obstacles[0].x < -self.BLOCK_WIDTH:
             del self.curr_obstacles[0]
 
         self.player.update()
@@ -62,15 +65,21 @@ class Field(object):
 
         # add a horizontal line for the ground
         shapes.append(Line(colors.WHITE, (0, self.GROUND_Y), (self.SCREEN_WIDTH, self.GROUND_Y), width=3))
-        
-        for pos in self.curr_obstacles:
-            shapes.append(Rectangle(colors.WHITE, self.SCREEN_WIDTH - pos, 
-                                    self.GROUND_Y - self.BLOCK_HEIGHT, self.BLOCK_WIDTH, 
-                                    self.BLOCK_HEIGHT))
 
+        shapes += self.curr_obstacles
         shapes += self.player.get_shapes()
 
         return shapes
 
     def jump(self):
         self.player.jump()
+
+    def check_is_over(self):
+        player_shape = self.player.get_shapes()[0]
+        player_rect = pygame.Rect(player_shape.x, player_shape.y, player_shape.width, player_shape.height)
+
+        for obs in self.curr_obstacles:
+            obstacle_rect = pygame.Rect(obs.x, obs.y, obs.width, obs.height)
+            if obstacle_rect.colliderect(player_rect):
+                return True
+        return False

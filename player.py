@@ -14,26 +14,28 @@ class Player(object):
         self.WIDTH = 10
         self.HEIGHT = 20
 
+        self.INIT_SPEED = 2.0
+        self.ACCELERATION = 0.05
+
         # the height to ground
         self.MAX_HEIGHT = 40
         self.curr_height = 0
-        self.direction = None
+        self.on_jump = False
+        self.curr_speed = 0.0
 
     def jump(self):
-        if self.direction is None:
-            self.direction = "up"
+        if not self.on_jump:
+            self.on_jump = True
+            self.curr_speed = self.INIT_SPEED
 
     def update(self):
-        if self.direction == "up":
-            if self.curr_height < self.MAX_HEIGHT:
-                self.curr_height += 1
-            else:
-                self.direction = "down"
-        elif self.direction == "down":
-            if self.curr_height > 0:
-                self.curr_height -= 1
-            else:
-                self.direction = None
+        if self.on_jump:
+            self.curr_height += self.curr_speed
+            self.curr_speed -= self.ACCELERATION
+
+            if self.curr_height < 0:
+                self.curr_height = 0
+                self.on_jump = False
 
     def get_shapes(self):
         x = self.X
