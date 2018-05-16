@@ -12,11 +12,13 @@ class Game:
         self.SCREEN_HEIGHT = 400
 
         # init pygame
+        """
         pygame.init()
         pygame.display.set_caption("Game")
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.FRAME_RATE = 60
         self.clock = pygame.time.Clock()
+        """
 
         # field and player objects for each game
         self.obstacle_pos = obstacle_pos

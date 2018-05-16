@@ -15,7 +15,7 @@ class Algorithm:
         self.generation = 0
 
         # create obstacles and open a new game
-        self.total_obs = 2000
+        self.total_obs = 200
         self.min_distance = 200
         self.obstacle_pos = [random.randint(i * self.min_distance, (i + 1) * self.min_distance) \
                              for i in range(self.total_obs)]
@@ -26,17 +26,17 @@ class Algorithm:
         acc_weight = 0.0
         for ind, weight in enumerate(self.fitness_weights):
             acc_weight += weight
-            if acc_weight > random_ind:
+            if acc_weight >= random_ind:
                 return self.population[ind]
 
-    def generate_population(self, random_state=42):
+    def init_population(self, random_state=42):
         random.seed(random_state)
         population = []
         for i in range(self.population_size):
             elem = np.array([random.randint(i * self.min_distance, (i + 1) * self.min_distance) \
                              for i in range(self.total_obs)])
             population.append(elem)
-        return population
+        self.population = population
 
     def get_fitness(self, element):
         return self.game.get_score(element)
@@ -91,7 +91,7 @@ class Algorithm:
         sys.stdout.flush()
 
     def start(self):
-        self.population = self.generate_population()
+        self.init_population()
 
         while self.generation < self.max_generation:
             # calculate the fitness score for each element

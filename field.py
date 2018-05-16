@@ -17,11 +17,11 @@ class Field(object):
         self.GROUND_Y = 200
         self.BLOCK_WIDTH = 10
         self.BLOCK_HEIGHT = 20
-        self.MAX_STEP = 400000
+        self.MAX_STEP = 40000
 
         # init obstacle positions
         if obstacle_pos is None:
-            self.obstacle_pos = [random.randint(i * 200, (i + 1) * 200) for i in range(2000)]
+            self.obstacle_pos = [random.randint(i * 200, (i + 1) * 200) for i in range(200)]
         else:
             self.obstacle_pos = obstacle_pos
 
