@@ -56,7 +56,7 @@ class GeneticGuess(object):
 
     def pick_parent(self):
         random_ind = random.random()
-        acc_weight = 0
+        acc_weight = 0.0
         for ind, weight in enumerate(self.fitness_weights):
             acc_weight += weight
             if acc_weight > random_ind:
@@ -99,7 +99,7 @@ class GeneticGuess(object):
     def report_info(self):
         best_guess = self.get_best_guess()
         sys.stdout.write("\rBest Guess: {} | Population: {} | Generation: {} | "
-                "Average Fitness: {:.2f}% | Mutation Rate: {}\r"
+                         "Average Fitness: {:.2f}% | Mutation Rate: {}\r"
                          .format(best_guess, self.population_size, self.generation, 
                                  self.avg_fitness, self.mutation_rate))
         sys.stdout.flush()

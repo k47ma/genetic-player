@@ -2,10 +2,10 @@ import colors
 from shapes import *
 
 class Player(object):
-    '''
+    """
     Manage the status of the player
-    '''
-    def __init__(self, start_x, start_y):
+    """
+    def __init__(self, start_x, start_y, actions=None):
         super(Player, self).__init__()
 
         # player info
@@ -23,12 +23,30 @@ class Player(object):
         self.on_jump = False
         self.curr_speed = 0.0
 
+        # pre-defined action list
+        self.actions = actions
+        self.pos_counter = 0
+
+    def _in_sorted(self, elem, sorted_list):
+        """Check whether elem is in the sorted list"""
+        for i in sorted_list:
+            if elem == i:
+                return True
+            elif elem > i:
+                return False
+        return False
+
     def jump(self):
         if not self.on_jump:
             self.on_jump = True
             self.curr_speed = self.INIT_SPEED
 
     def update(self):
+        self.pos_counter += 1
+        if self.actions is not None:
+            if self._in_sorted(self.pos_counter, self.actions):
+                self.jump()
+
         if self.on_jump:
             self.curr_height += self.curr_speed
             self.curr_speed -= self.ACCELERATION
