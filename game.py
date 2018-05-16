@@ -1,13 +1,14 @@
 import pygame
 import random
+import colors
+from field import Field
+from shape import *
 
 class Game:
     def __init__(self):
         self._done = False
         self.SCREEN_WIDTH = 640
         self.SCREEN_HEIGHT = 400
-        self.BLOCK_WIDTH = 10
-        self.BLOCK_HEIGHT = 20
 
         # init pygame        
         pygame.init()
@@ -15,16 +16,13 @@ class Game:
         self.FRAME_RATE = 60
         self.clock = pygame.time.Clock()
 
-        # init obstacle positions
-        self.obstacle_pos = [random.randint(i * 200, (i + 1) * 200) for i in range(20)]
-        self.obstacle_pos.sort()
-        self.curr_obstacles = []
-        self.pos_counter = 0
-        
-        # some useful constants
-        self.COLOR_BLACK = (0, 0, 0)
-        self.COLOR_WHITE = (255, 255, 255)
-        self.COLOR_BLUE = (0, 120, 255)
+        # field and player objects for each game
+        self.field = None
+
+        self.setup_game()
+
+    def setup_game(self):
+        self.field = Field(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -36,27 +34,18 @@ class Game:
             self._done = True
 
     def update_screen(self):
-        self.screen.fill(self.COLOR_BLACK)
+        self.screen.fill(colors.BLACK)
 
-        self._draw_obstacles()
+        self._draw_field()
 
         pygame.display.flip()
         self.clock.tick(self.FRAME_RATE)
 
     def on_update(self):
-        self.pos_counter += 1
-        if self.pos_counter in self.obstacle_pos:
-            self.curr_obstacles.append(0)
-        if self.pos_counter == 4000:
-            self.pos_counter = 0
-
-        # increment all obstacle positions by 1
-        for ind in range(len(self.curr_obstacles)):
-            self.curr_obstacles[ind] += 1
-
-        # delete out of range positions
-        if self.curr_obstacles and self.curr_obstacles[0] > self.SCREEN_WIDTH + self.BLOCK_WIDTH:
-            del self.curr_obstacles[0]
+        '''
+        Things to do when frame changed
+        '''
+        self.field.update()
         
     def start(self):
         while not self._done:
@@ -64,12 +53,20 @@ class Game:
             self.update_screen()
             self.on_update()
 
-    def _draw_obstacles(self):
-        pygame.draw.line(self.screen, self.COLOR_WHITE, (0, 200), (640, 200), 3)
-        
-        for obs in self.curr_obstacles:
-            pygame.draw.rect(self.screen, self.COLOR_WHITE, (640 - obs, 200 - self.BLOCK_HEIGHT, self.BLOCK_WIDTH, self.BLOCK_HEIGHT))
+    def _draw_shape(self, shape):
+        if isinstance(shape, Line):
+            pygame.draw.line(self.screen, shape.color, shape.start_pos, shape.end_pos, shape.width)
+        elif isinstance(shape, Rectangle):
+            pygame.draw.rect(self.screen, shape.color, (shape.x, shape.y, shape.width, shape.height))
+        else:
+            print "[ERROR] Unknown shape type {}!".format(shape.__class__.__name__)
 
+    def _draw_field(self):
+        shapes = self.field.get_shapes()
+        for shape in shapes:
+            self._draw_shape(shape)
+
+    
 if __name__ == '__main__':
     game = Game()
     game.start()
