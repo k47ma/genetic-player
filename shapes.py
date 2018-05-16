@@ -1,3 +1,5 @@
+from pygame import Rect
+
 class Shape(object):
     def __init__(self):
         super(Shape, self).__init__()
@@ -21,3 +23,6 @@ class Rectangle(Shape):
         self.y = y
         self.width = width
         self.height = height
+
+    def to_pygame_rect(self):
+        return Rect(self.x, self.y, self.width, self.height)

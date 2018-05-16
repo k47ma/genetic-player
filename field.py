@@ -10,7 +10,7 @@ class Field(object):
     '''
     def __init__(self, screen_width, screen_height):
         super(Field, self).__init__()
-        
+
         # constants
         self.SCREEN_WIDTH = screen_width
         self.SCREEN_HEIGHT = screen_height
@@ -34,8 +34,8 @@ class Field(object):
         '''
         self.pos_counter += 1
         if self.pos_counter in self.obstacle_pos:
-            new_obs = Rectangle(colors.WHITE, self.SCREEN_WIDTH, 
-                                self.GROUND_Y - self.BLOCK_HEIGHT, self.BLOCK_WIDTH, 
+            new_obs = Rectangle(colors.WHITE, self.SCREEN_WIDTH,
+                                self.GROUND_Y - self.BLOCK_HEIGHT, self.BLOCK_WIDTH,
                                 self.BLOCK_HEIGHT)
             self.curr_obstacles.append(new_obs)
         if self.pos_counter == 4000:
@@ -76,10 +76,10 @@ class Field(object):
 
     def check_is_over(self):
         player_shape = self.player.get_shapes()[0]
-        player_rect = pygame.Rect(player_shape.x, player_shape.y, player_shape.width, player_shape.height)
+        player_rect = player_shape.to_pygame_rect()
 
         for obs in self.curr_obstacles:
-            obstacle_rect = pygame.Rect(obs.x, obs.y, obs.width, obs.height)
+            obstacle_rect = obs.to_pygame_rect()
             if obstacle_rect.colliderect(player_rect):
                 return True
         return False
