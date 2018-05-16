@@ -2,7 +2,7 @@ import pygame
 import random
 import colors
 from field import Field
-from shape import *
+from shapes import *
 
 class Game:
     def __init__(self):
@@ -32,6 +32,8 @@ class Game:
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_q] or pressed[pygame.K_ESCAPE]: 
             self._done = True
+        if pressed[pygame.K_SPACE]:
+            self.field.jump()
 
     def update_screen(self):
         self.screen.fill(colors.BLACK)
