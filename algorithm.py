@@ -6,7 +6,7 @@ from game import Game
 from util import *
 
 class Algorithm:
-    def __init__(self, population_size=1000, mutation_rate=0.1, max_generation=10000):
+    def __init__(self, population_size=200, mutation_rate=0.1, max_generation=10000):
         self.population_size = population_size
         self.mutation_rate = mutation_rate
         self.max_generation = max_generation
@@ -46,7 +46,8 @@ class Algorithm:
         self.population = population
 
     def get_fitness(self, element):
-        return self.game.get_score(element)
+        score = self.game.get_score(element)
+        return score
 
     def pop_to_fitness(self, population, queue, process_ind):
         result = []
@@ -119,7 +120,7 @@ class Algorithm:
         best_fitness = self.fitness[best_ind]
         best_population = self.population[best_ind]
         sys.stdout.write("Highest Fitness: {} | Population: {} | Generation: {} | "
-                         "Average Fitness: {:.1f} | Mutation Rate: {}"
+                         "Average Fitness: {:.1f} | Mutation Rate: {}\n"
                          .format(best_fitness, self.population_size, self.generation,
                                  self.avg_fitness, self.mutation_rate))
         sys.stdout.flush()
@@ -134,8 +135,8 @@ class Algorithm:
             # calculate the fitness score for each element
             self.update_fitness()
 
-            # crossover and mutate the population list
-            self.crossover()
-
             # report generation information
             self.report_info()
+
+            # crossover and mutate the population list to get the next generation
+            self.crossover()

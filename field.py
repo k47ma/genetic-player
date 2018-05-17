@@ -26,7 +26,6 @@ class Field(object):
         else:
             self.obstacle_pos = obstacle_pos
 
-        self.obstacle_pos.sort()
         self.curr_obstacles = []
         self.pos_counter = 0
         self.score = 0.0
@@ -91,8 +90,9 @@ class Field(object):
         return False
 
     def quick_play(self):
+        """Run the game without stop and return the score"""
         while self.pos_counter < self.MAX_STEP:
-            self.update()
             if self.check_is_over():
                 return self.score
+            self.update()
         return self.score
