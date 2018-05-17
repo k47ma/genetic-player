@@ -2,6 +2,7 @@ import pygame
 import random
 import colors
 from shapes import *
+from util import *
 from player import Player
 
 class Field(object):
@@ -33,19 +34,10 @@ class Field(object):
         self.PLAYER_X = self.SCREEN_WIDTH * 0.2
         self.player = Player(self.PLAYER_X, self.GROUND_Y, actions=player_actions)
 
-    def _in_sorted(self, elem, sorted_list):
-        """Check whether elem is in the sorted list"""
-        for i in sorted_list:
-            if elem == i:
-                return True
-            elif elem > i:
-                return False
-        return False
-
     def update(self):
         """Method to be called when the game frame is updated"""
         self.pos_counter += 1
-        if self._in_sorted(self.pos_counter, self.obstacle_pos):
+        if in_sorted(self.pos_counter, self.obstacle_pos):
             new_obs = Rectangle(colors.WHITE, self.SCREEN_WIDTH,
                                 self.GROUND_Y - self.BLOCK_HEIGHT, self.BLOCK_WIDTH,
                                 self.BLOCK_HEIGHT)

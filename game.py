@@ -12,13 +12,11 @@ class Game:
         self.SCREEN_HEIGHT = 400
 
         # init pygame
-        """
         pygame.init()
         pygame.display.set_caption("Game")
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.FRAME_RATE = 60
         self.clock = pygame.time.Clock()
-        """
 
         # field and player objects for each game
         self.obstacle_pos = obstacle_pos
@@ -43,7 +41,7 @@ class Game:
                 self._done = True
 
         pressed = pygame.key.get_pressed()
-        if pressed[pygame.K_q] or pressed[pygame.K_ESCAPE]: 
+        if pressed[pygame.K_q] or pressed[pygame.K_ESCAPE]:
             self._done = True
         if pressed[pygame.K_SPACE] and not self.auto_mode:
             self.field.jump()
@@ -68,7 +66,7 @@ class Game:
                       obstacle_pos=self.obstacle_pos, player_actions=actions)
         score = field.quick_play()
         return score
-        
+
     def start(self):
         while not self._done:
             self.handle_events()
@@ -76,6 +74,15 @@ class Game:
             if not self.is_over():
                 self.update_screen()
                 self.on_update()
+
+    def show(self, actions):
+        self.field = Field(self.SCREEN_WIDTH, self.SCREEN_HEIGHT,
+                           obstacle_pos=self.obstacle_pos, player_actions=actions)
+
+        while not self.is_over():
+            self.handle_events()
+            self.update_screen()
+            self.on_update()
 
     def _draw_shape(self, shape):
         if isinstance(shape, Line):
@@ -85,7 +92,7 @@ class Game:
         else:
             print "[ERROR] Unknown shape type {}!".format(shape.__class__.__name__)
 
-    
+
 if __name__ == '__main__':
     game = Game()
     game.start()

@@ -1,10 +1,12 @@
 import sys
 import random
 import numpy as np
+import multiprocessing as mp
 from game import Game
+from util import *
 
 class Algorithm:
-    def __init__(self, population_size=1000, mutation_rate=0.01, max_generation=10000):
+    def __init__(self, population_size=1000, mutation_rate=0.1, max_generation=10000):
         self.population_size = population_size
         self.mutation_rate = mutation_rate
         self.max_generation = max_generation
@@ -14,9 +16,14 @@ class Algorithm:
         self.avg_fitness = 0.0
         self.generation = 0
 
+        # maximum number of processes for multiprocessing
+        self.MAX_PROCESS = 4
+
         # create obstacles and open a new game
         self.total_obs = 200
         self.min_distance = 200
+        self.total_jumps = 400
+        self.jump_min_distance = 100
         self.obstacle_pos = [random.randint(i * self.min_distance, (i + 1) * self.min_distance) \
                              for i in range(self.total_obs)]
         self.game = Game(self.obstacle_pos, auto_mode=True)
@@ -33,19 +40,44 @@ class Algorithm:
         random.seed(random_state)
         population = []
         for i in range(self.population_size):
-            elem = np.array([random.randint(i * self.min_distance, (i + 1) * self.min_distance) \
-                             for i in range(self.total_obs)])
+            elem = np.array([random.randint(i * self.jump_min_distance, (i + 1) * self.jump_min_distance) \
+                             for i in range(self.total_jumps)])
             population.append(elem)
         self.population = population
 
     def get_fitness(self, element):
         return self.game.get_score(element)
 
+    def pop_to_fitness(self, population, queue, process_ind):
+        result = []
+        for pop in population:
+            fitness = self.get_fitness(pop)
+            result.append(fitness)
+        queue.put({"process_ind": process_ind, "data": result})
+
     def update_fitness(self):
-        new_fitness = np.array([], dtype=float)
-        for elem in self.population:
-            fitness = self.get_fitness(elem)
-            np.append(new_fitness, fitness)
+        population_parts = split_list(self.population, self.MAX_PROCESS)
+        result_queue = mp.Queue()
+
+        # create a new process for each part of the population and calculate the fitness
+        processes = []
+        for process_ind in range(self.MAX_PROCESS):
+            process = mp.Process(target=self.pop_to_fitness(population_parts[process_ind],
+                                                            result_queue, process_ind))
+            process.daemon = True
+            processes.append(process)
+            process.start()
+
+        # wait until all the processes are done
+        for process in processes:
+            process.join()
+
+        # recover the result from queue
+        result_list = [result_queue.get() for i in range(self.MAX_PROCESS)]
+        result_list = sorted(result_list, key=lambda x: x['process_ind'])
+        new_fitness = []
+        for part in result_list:
+            new_fitness += part['data']
 
         # update fitness list
         self.fitness = new_fitness
@@ -63,7 +95,7 @@ class Algorithm:
 
             # produce child element
             stack = np.vstack((parent1, parent2))
-            child = np.mean(stack, axis=0)
+            child = np.mean(stack, axis=0, dtype=int)
 
             # mutate child list by mutation rate
             for ind in range(self.total_obs):
@@ -79,16 +111,21 @@ class Algorithm:
         self.population = new_population
         self.generation += 1
 
-    def get_best_guess(self):
-        return np.max(self.fitness)
+    def get_best_ind(self):
+        return np.argmax(self.fitness)
 
     def report_info(self):
-        best_guess = self.get_best_guess()
-        sys.stdout.write("\rHighest Fitness: {} | Population: {} | Generation: {} | "
-                         "Average Fitness: {:.2f}% | Mutation Rate: {}\r"
-                         .format(best_guess, self.population_size, self.generation,
+        best_ind = self.get_best_ind()
+        best_fitness = self.fitness[best_ind]
+        best_population = self.population[best_ind]
+        sys.stdout.write("Highest Fitness: {} | Population: {} | Generation: {} | "
+                         "Average Fitness: {:.1f} | Mutation Rate: {}"
+                         .format(best_fitness, self.population_size, self.generation,
                                  self.avg_fitness, self.mutation_rate))
         sys.stdout.flush()
+
+        # show the best result in display
+        self.game.show(best_population)
 
     def start(self):
         self.init_population()

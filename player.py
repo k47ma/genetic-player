@@ -1,5 +1,6 @@
 import colors
 from shapes import *
+from util import *
 
 class Player(object):
     """
@@ -27,15 +28,6 @@ class Player(object):
         self.actions = actions
         self.pos_counter = 0
 
-    def _in_sorted(self, elem, sorted_list):
-        """Check whether elem is in the sorted list"""
-        for i in sorted_list:
-            if elem == i:
-                return True
-            elif elem > i:
-                return False
-        return False
-
     def jump(self):
         if not self.on_jump:
             self.on_jump = True
@@ -44,7 +36,7 @@ class Player(object):
     def update(self):
         self.pos_counter += 1
         if self.actions is not None:
-            if self._in_sorted(self.pos_counter, self.actions):
+            if in_sorted(self.pos_counter, self.actions):
                 self.jump()
 
         if self.on_jump:
