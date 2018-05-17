@@ -79,6 +79,13 @@ class Field(object):
     def jump(self):
         self.player.jump()
 
+    def move(self, direction):
+        player_rect = self.player.get_shapes()[0]
+        if direction == "left" and player_rect.x > 0:
+            self.player.move("left")
+        elif direction == "right" and player_rect.x < self.SCREEN_WIDTH - player_rect.width:
+            self.player.move("right")
+
     def check_is_over(self):
         player_shape = self.player.get_shapes()[0]
         player_rect = player_shape.to_pygame_rect()

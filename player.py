@@ -17,6 +17,7 @@ class Player(object):
 
         self.INIT_SPEED = 2.0
         self.ACCELERATION = 0.05
+        self.MOVE_SPEED = 2.0
 
         # the height to ground
         self.MAX_HEIGHT = 40
@@ -32,6 +33,12 @@ class Player(object):
         if not self.on_jump:
             self.on_jump = True
             self.curr_speed = self.INIT_SPEED
+
+    def move(self, direction):
+        if direction == "left":
+            self.X -= self.MOVE_SPEED
+        else:
+            self.X += self.MOVE_SPEED
 
     def update(self):
         self.pos_counter += 1

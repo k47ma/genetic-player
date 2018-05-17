@@ -75,9 +75,16 @@ class Game:
         if pressed[pygame.K_q] or pressed[pygame.K_ESCAPE]:
             # quit game
             self._done = True
-        if pressed[pygame.K_SPACE] and not self.auto_mode:
-            # jump
-            self.field.jump()
+        if not self.auto_mode:
+            if pressed[pygame.K_SPACE] or pressed[pygame.K_UP]:
+                # jump
+                self.field.jump()
+            if pressed[pygame.K_LEFT]:
+                # move left
+                self.field.move("left")
+            if pressed[pygame.K_RIGHT]:
+                # move right
+                self.field.move("right")
 
     def update_screen(self, info=None):
         self.screen.fill(colors.BLACK)

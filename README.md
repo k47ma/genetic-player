@@ -6,7 +6,9 @@ The program will use genetic algorithm to play the game and find the best soluti
 
 The game can also be played independently from the algorithm by running `game.py`.
 Keys:
-  - `space`: jump
+  - `space` or `up`: jump
+  - `left`: move left
+  - `right`: move right
   - `R`: restart game
   - `Q` or `ESC`: quit game
 
