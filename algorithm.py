@@ -84,9 +84,13 @@ class Algorithm:
         self.fitness = new_fitness
         self.avg_fitness = np.average(self.fitness)
 
-        # calculate the fitness weights
-        total_fitness = np.sum(new_fitness)
-        self.fitness_weights = new_fitness / total_fitness
+        # calculate the fitness weights,
+        #   here we use exponent of fitness for the weight so that elements
+        #   with higher fitness has a much higher possibility to be chosen
+        #   in crossover than weak elements
+        exp_fitness = np.multiply(new_fitness, new_fitness)
+        total_fitness = np.sum(exp_fitness)
+        self.fitness_weights = exp_fitness / total_fitness
 
     def crossover(self):
         new_population = []
