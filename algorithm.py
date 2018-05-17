@@ -15,6 +15,7 @@ class Algorithm:
         self.fitness_weights = None
         self.avg_fitness = 0.0
         self.generation = 0
+        self.history = []
 
         # maximum number of processes for multiprocessing
         self.MAX_PROCESS = 4
@@ -130,8 +131,11 @@ class Algorithm:
         sys.stdout.write(formatted_info + "\n")
         sys.stdout.flush()
 
+        # add the result to history
+        self.history.append(info)
+
         # show the best result in display
-        self.game.show(best_population, info=info)
+        self.game.show(best_population, info=info, history=dict(self.history))
 
     def start(self):
         self.init_population()

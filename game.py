@@ -1,6 +1,7 @@
 import pygame
 import colors
 from field import Field
+from chart import Chart
 from shapes import *
 
 class Game:
@@ -27,6 +28,7 @@ class Game:
         # field and player objects for each game
         self.obstacle_pos = obstacle_pos
         self.field = None
+        self.chart = None
 
         self.setup_game()
 
@@ -50,6 +52,9 @@ class Game:
                 y += font_height
                 info_text = self.info_font.render("{}: {}".format(key, val), True, colors.WHITE)
                 self.screen.blit(info_text, (x, y))
+
+    def _draw_history_panel(self, history):
+        x, y = 30, 250
 
     def _draw_shape(self, shape):
         if isinstance(shape, Line):
@@ -95,11 +100,13 @@ class Game:
                 # move right
                 self.field.move("right")
 
-    def update_screen(self, info=None):
+    def update_screen(self, info=None, history=None):
         self.screen.fill(colors.BLACK)
 
         self._draw_field()
         self._draw_info_panel(info)
+        if history:
+            self._draw_history_panel(history)
 
         pygame.display.flip()
         self.clock.tick(self.FRAME_RATE)
@@ -123,15 +130,16 @@ class Game:
                 self.update_screen()
                 self.on_update()
 
-    def show(self, actions, info=None):
+    def show(self, actions, info=None, history=None):
         self.field = Field(self.SCREEN_WIDTH, self.SCREEN_HEIGHT,
                            obstacle_pos=self.obstacle_pos, player_actions=actions)
+        self.chart = Chart()
 
         while not self.is_over():
             self.handle_events()
 
             if self.enable_display:
-                self.update_screen(info=info)
+                self.update_screen(info=info, history=history)
 
             self.on_update()
 
