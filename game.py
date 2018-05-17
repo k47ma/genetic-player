@@ -22,6 +22,8 @@ class Game:
         pygame.font.init()
         self.default_font = pygame.font.SysFont(pygame.font.get_default_font(), 30)
 
+        self.enable_display = True
+
         # field and player objects for each game
         self.obstacle_pos = obstacle_pos
         self.field = None
@@ -58,14 +60,24 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self._done = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_d:
+                    # toggle display
+                    self.enable_display = not self.enable_display
+                    print "Display Mode: {}".format(self.enable_display)
+                    self.screen.fill(colors.BLACK)
+                    pygame.display.flip()
+                if event.key == pygame.K_r and self.is_over():
+                    # restart game
+                    self.setup_game()
 
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_q] or pressed[pygame.K_ESCAPE]:
+            # quit game
             self._done = True
         if pressed[pygame.K_SPACE] and not self.auto_mode:
+            # jump
             self.field.jump()
-        if pressed[pygame.K_r] and self.is_over():
-            self.setup_game()
 
     def update_screen(self, info=None):
         self.screen.fill(colors.BLACK)
@@ -101,7 +113,10 @@ class Game:
 
         while not self.is_over():
             self.handle_events()
-            self.update_screen()
+
+            if self.enable_display:
+                self.update_screen()
+
             self.on_update()
 
 
