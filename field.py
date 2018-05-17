@@ -29,6 +29,7 @@ class Field(object):
         self.obstacle_pos.sort()
         self.curr_obstacles = []
         self.pos_counter = 0
+        self.score = 0.0
 
         # player
         self.PLAYER_X = self.SCREEN_WIDTH * 0.2
@@ -37,6 +38,8 @@ class Field(object):
     def update(self):
         """Method to be called when the game frame is updated"""
         self.pos_counter += 1
+        self.score += 0.1
+
         if in_sorted(self.pos_counter, self.obstacle_pos):
             new_obs = Rectangle(colors.WHITE, self.SCREEN_WIDTH,
                                 self.GROUND_Y - self.BLOCK_HEIGHT, self.BLOCK_WIDTH,
@@ -59,6 +62,9 @@ class Field(object):
     def get_obstacles(self):
         """Get a list of coordinates for obstacles"""
         return self.curr_obstacles
+
+    def get_score(self):
+        return self.score
 
     def get_shapes(self):
         shapes = []
@@ -85,11 +91,8 @@ class Field(object):
         return False
 
     def quick_play(self):
-        score = 0.0
         while self.pos_counter < self.MAX_STEP:
             self.update()
             if self.check_is_over():
-                return score
-            else:
-                score += 0.1
-        return score
+                return self.score
+        return self.score

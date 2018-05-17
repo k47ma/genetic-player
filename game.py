@@ -15,8 +15,12 @@ class Game:
         pygame.init()
         pygame.display.set_caption("Game")
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+
         self.FRAME_RATE = 60
         self.clock = pygame.time.Clock()
+
+        pygame.font.init()
+        self.default_font = pygame.font.SysFont(pygame.font.get_default_font(), 30)
 
         # field and player objects for each game
         self.obstacle_pos = obstacle_pos
@@ -28,6 +32,21 @@ class Game:
         shapes = self.field.get_shapes()
         for shape in shapes:
             self._draw_shape(shape)
+
+    def _draw_info_panel(self, info=None):
+        if info is None:
+            # By default, display scores only
+            score = self.field.get_score()
+            text = self.default_font.render("Score: {}".format(score), True, colors.WHITE)
+            self.screen.blit(text, (30, 30))
+
+    def _draw_shape(self, shape):
+        if isinstance(shape, Line):
+            pygame.draw.line(self.screen, shape.color, shape.start_pos, shape.end_pos, shape.width)
+        elif isinstance(shape, Rectangle):
+            pygame.draw.rect(self.screen, shape.color, (shape.x, shape.y, shape.width, shape.height))
+        else:
+            print "[ERROR] Unknown shape type {}!".format(shape.__class__.__name__)
 
     def setup_game(self):
         self.field = Field(self.SCREEN_WIDTH, self.SCREEN_HEIGHT, obstacle_pos=self.obstacle_pos)
@@ -48,10 +67,11 @@ class Game:
         if pressed[pygame.K_r] and self.is_over():
             self.setup_game()
 
-    def update_screen(self):
+    def update_screen(self, info=None):
         self.screen.fill(colors.BLACK)
 
         self._draw_field()
+        self._draw_info_panel(info)
 
         pygame.display.flip()
         self.clock.tick(self.FRAME_RATE)
@@ -83,14 +103,6 @@ class Game:
             self.handle_events()
             self.update_screen()
             self.on_update()
-
-    def _draw_shape(self, shape):
-        if isinstance(shape, Line):
-            pygame.draw.line(self.screen, shape.color, shape.start_pos, shape.end_pos, shape.width)
-        elif isinstance(shape, Rectangle):
-            pygame.draw.rect(self.screen, shape.color, (shape.x, shape.y, shape.width, shape.height))
-        else:
-            print "[ERROR] Unknown shape type {}!".format(shape.__class__.__name__)
 
 
 if __name__ == '__main__':
