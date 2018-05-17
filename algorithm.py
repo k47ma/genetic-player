@@ -123,14 +123,15 @@ class Algorithm:
         best_ind = self.get_best_ind()
         best_fitness = self.fitness[best_ind]
         best_population = self.population[best_ind]
-        sys.stdout.write("Highest Fitness: {} | Population: {} | Generation: {} | "
-                         "Average Fitness: {:.1f} | Mutation Rate: {}\n"
-                         .format(best_fitness, self.population_size, self.generation,
-                                 self.avg_fitness, self.mutation_rate))
+        info = [("Highest Fitness", best_fitness), ("Population", self.population_size),
+                ("Generation", self.generation), ("Average Fitness", self.avg_fitness),
+                ("Mutation Rate", self.mutation_rate)]
+        formatted_info = " | ".join(["{}: {}".format(key, val) for key, val in info])
+        sys.stdout.write(formatted_info + "\n")
         sys.stdout.flush()
 
         # show the best result in display
-        self.game.show(best_population)
+        self.game.show(best_population, info=info)
 
     def start(self):
         self.init_population()

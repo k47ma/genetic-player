@@ -1,5 +1,4 @@
 import pygame
-import random
 import colors
 from field import Field
 from shapes import *
@@ -20,7 +19,8 @@ class Game:
         self.clock = pygame.time.Clock()
 
         pygame.font.init()
-        self.default_font = pygame.font.SysFont(pygame.font.get_default_font(), 30)
+        self.default_font = pygame.font.SysFont(pygame.font.get_default_font(), 25)
+        self.info_font = self.default_font
 
         self.enable_display = True
 
@@ -36,11 +36,20 @@ class Game:
             self._draw_shape(shape)
 
     def _draw_info_panel(self, info=None):
-        if info is None:
-            # By default, display scores only
-            score = self.field.get_score()
-            text = self.default_font.render("Score: {}".format(score), True, colors.WHITE)
-            self.screen.blit(text, (30, 30))
+        x, y = 30, 30
+        font_height = self.default_font.get_height()
+
+        # By default, display scores only
+        score = self.field.get_score()
+        text = self.info_font.render("Score: {}".format(score), True, colors.WHITE)
+        self.screen.blit(text, (x, y))
+
+        # display additional info
+        if info:
+            for key, val in info:
+                y += font_height
+                info_text = self.info_font.render("{}: {}".format(key, val), True, colors.WHITE)
+                self.screen.blit(info_text, (x, y))
 
     def _draw_shape(self, shape):
         if isinstance(shape, Line):
@@ -114,7 +123,7 @@ class Game:
                 self.update_screen()
                 self.on_update()
 
-    def show(self, actions):
+    def show(self, actions, info=None):
         self.field = Field(self.SCREEN_WIDTH, self.SCREEN_HEIGHT,
                            obstacle_pos=self.obstacle_pos, player_actions=actions)
 
@@ -122,7 +131,7 @@ class Game:
             self.handle_events()
 
             if self.enable_display:
-                self.update_screen()
+                self.update_screen(info=info)
 
             self.on_update()
 

@@ -1,4 +1,3 @@
-import pygame
 import random
 import colors
 from shapes import *
