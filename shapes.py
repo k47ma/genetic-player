@@ -52,14 +52,14 @@ class DashLine(Shape):
             if ind % 2:
                 continue
 
-            start_x = int(self.start_pos[0] + x_distance * ind * \
+            start_x = int(self.start_pos[0] + x_distance * ind *
                           self.dash_length / distance(self.start_pos, self.end_pos))
-            start_y = int(self.start_pos[0] + y_distance * ind * \
+            start_y = int(self.start_pos[1] + y_distance * ind *
                           self.dash_length / distance(self.start_pos, self.end_pos))
-            end_x = int(self.start_pos[0] + x_distance * (ind + 1) * \
-                          self.dash_length / distance(self.start_pos, self.end_pos))
-            end_y = int(self.start_pos[0] + y_distance * (ind + 1) * \
-                          self.dash_length / distance(self.start_pos, self.end_pos))
+            end_x = int(self.start_pos[0] + x_distance * (ind + 1) *
+                        self.dash_length / distance(self.start_pos, self.end_pos))
+            end_y = int(self.start_pos[1] + y_distance * (ind + 1) *
+                        self.dash_length / distance(self.start_pos, self.end_pos))
 
             line = Line(self.color, (start_x, start_y), (end_x, end_y), width=self.width)
             lines.append(line)
