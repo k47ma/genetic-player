@@ -62,31 +62,30 @@ class Chart:
 
         # values on the axis
         anchor_length = 2
-        anchor_distance = (y_axis_end[1] - y_axis_start[1]) / 6
-        anchor_value_distance = (self.y_range[1] - self.y_range[0]) / 4.0
+        anchors = 5
+        anchor_distance = (y_axis_end[1] - y_axis_start[1]) / 5
         mid_point = (0, 0)
-        for i in range(5):
+        for i in range(anchors):
             start_pos = (y_axis_start[0], y_axis_start[1] + anchor_distance * (i + 1))
             end_pos = (start_pos[0] - anchor_length, start_pos[1])
             anchor_shape = Line(self.axis_color, start_pos, end_pos)
             shapes.append(anchor_shape)
 
-            if i == 2:
+            if i == 0:
                 mid_point = start_pos
 
             # add value text for the anchor
             if self.y_range[1] - self.y_range[0]:
-                anchor_value = int(self.y_range[1] - anchor_value_distance * i)
-                anchor_value = anchor_value - anchor_value % 5
+                anchor_value = int(self.y_range[1] * 0.25 * (anchors - 1 - i))
 
                 rendered_text = self.digit_font.render(str(anchor_value), True, self.text_color)
-                anchor_text = Text(rendered_text, (end_pos[0] - 12, end_pos[1] - 3))
+                anchor_text = Text(rendered_text, (end_pos[0] - 17, end_pos[1] - 3))
                 shapes.append(anchor_text)
-            elif i == 2:
-                anchor_value = int(self.y_range[0])
+            elif i == 0:
+                anchor_value = int(self.y_range[1])
 
                 rendered_text = self.digit_font.render(str(anchor_value), True, self.text_color)
-                anchor_text = Text(rendered_text, (end_pos[0] - 12, end_pos[1] - 3))
+                anchor_text = Text(rendered_text, (end_pos[0] - 17, end_pos[1] - 3))
                 shapes.append(anchor_text)
 
         # add points and constants
@@ -95,12 +94,15 @@ class Chart:
             if not self.x_range[1] - self.x_range[0]:
                 x, y = mid_point
             else:
-                x = int(x_axis_start[0] + (x_axis_end[0] - x_axis_start[0] - 20) / \
-                        (self.x_range[1] - self.x_range[0]) * \
-                        (self.x_values[i] - self.x_range[0]))
-                y = int(y_axis_end[1] - (y_axis_start[1] - y_axis_end[1]) * 4.0 / 6.0 / \
-                        (self.y_range[1] - self.y_range[0]) * \
-                        (self.y_values[i] - self.y_range[0]) - anchor_distance)
+                try:
+                    x = int(x_axis_start[0] + (x_axis_end[0] - x_axis_start[0] - 20) /
+                            (self.x_range[1] - 1) * (self.x_values[i] - 1))
+                except ZeroDivisionError:
+                    x = mid_point[0]
+                try:
+                    y = int(y_axis_end[1] - anchor_distance * (anchors - 1) / self.y_range[1] * self.y_values[i])
+                except ZeroDivisionError:
+                    y = mid_point[1]
 
             # connect points with line
             if i:
@@ -113,10 +115,8 @@ class Chart:
             for constant in self.constants:
                 start_x = x_axis_start[0]
                 end_x = x_axis_end[0] - 20
-                if self.y_range[1] - self.y_range[0]:
-                    y = int(y_axis_end[1] - (y_axis_start[1] - y_axis_end[1]) * \
-                            4.0 / 6.0 / (self.y_range[1] - self.y_range[0]) * \
-                            (constant - self.y_range[0]) - anchor_distance)
+                if self.y_range[1] - self.y_range[0] and constant - self.y_range[0]:
+                    y = int(y_axis_end[1] - anchor_distance * (anchors - 1) / self.y_range[1] * constant)
                 else:
                     y = mid_point[1]
                 line = DashLine(self.line_color, (start_x, y), (end_x, y), dash_length=5)

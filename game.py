@@ -63,7 +63,7 @@ class Game:
 
     def _draw_shape(self, shape):
         if isinstance(shape, Line):
-            pygame.draw.line(self.screen, shape.color, shape.start_pos, shape.end_pos, shape.width)
+            pygame.draw.aaline(self.screen, shape.color, shape.start_pos, shape.end_pos, shape.width)
         elif isinstance(shape, Rectangle):
             pygame.draw.rect(self.screen, shape.color, (shape.x, shape.y, shape.width, shape.height))
         elif isinstance(shape, Circle):

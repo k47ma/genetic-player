@@ -115,7 +115,6 @@ class Algorithm:
             new_population.append(child)
 
         self.population = new_population
-        self.generation += 1
 
     def get_best_ind(self):
         return np.argmax(self.fitness)
@@ -141,6 +140,8 @@ class Algorithm:
         self.init_population()
 
         while self.generation < self.max_generation:
+            self.generation += 1
+
             # calculate the fitness score for each element
             self.update_fitness()
 
