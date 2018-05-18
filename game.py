@@ -20,15 +20,18 @@ class Game:
         self.clock = pygame.time.Clock()
 
         pygame.font.init()
-        self.default_font = pygame.font.SysFont(pygame.font.get_default_font(), 25)
+        self.default_font = pygame.font.SysFont(pygame.font.get_default_font(), 23)
         self.info_font = self.default_font
 
         self.enable_display = True
 
+        # position for displaying history chart
+        self.CHART_POS = (30, 220)
+
         # field and player objects for each game
         self.obstacle_pos = obstacle_pos
         self.field = None
-        self.chart = None
+        self.history_chart = None
 
         self.setup_game()
 
@@ -53,14 +56,23 @@ class Game:
                 info_text = self.info_font.render("{}: {}".format(key, val), True, colors.WHITE)
                 self.screen.blit(info_text, (x, y))
 
-    def _draw_history_panel(self, history):
-        x, y = 30, 250
+    def _draw_history_panel(self):
+        shapes = self.history_chart.get_shapes()
+        for shape in shapes:
+            self._draw_shape(shape)
 
     def _draw_shape(self, shape):
         if isinstance(shape, Line):
             pygame.draw.line(self.screen, shape.color, shape.start_pos, shape.end_pos, shape.width)
         elif isinstance(shape, Rectangle):
             pygame.draw.rect(self.screen, shape.color, (shape.x, shape.y, shape.width, shape.height))
+        elif isinstance(shape, Circle):
+            pygame.draw.circle(self.screen, shape.color, shape.pos, shape.radius, shape.width)
+        elif isinstance(shape, DashLine):
+            for line in shape.lines:
+                self._draw_shape(line)
+        elif isinstance(shape, Text):
+            self.screen.blit(shape.text_surface, shape.pos)
         else:
             print "[ERROR] Unknown shape type {}!".format(shape.__class__.__name__)
 
@@ -105,8 +117,8 @@ class Game:
 
         self._draw_field()
         self._draw_info_panel(info)
-        if history:
-            self._draw_history_panel(history)
+        if self.history_chart:
+            self._draw_history_panel()
 
         pygame.display.flip()
         self.clock.tick(self.FRAME_RATE)
@@ -133,13 +145,20 @@ class Game:
     def show(self, actions, info=None, history=None):
         self.field = Field(self.SCREEN_WIDTH, self.SCREEN_HEIGHT,
                            obstacle_pos=self.obstacle_pos, player_actions=actions)
-        self.chart = Chart()
+
+        if history:
+            x_values = [gen_info['Generation'] for gen_info in history]
+            y_values = [gen_info['Highest Fitness'] for gen_info in history]
+            constants = [history[-1]['Average Fitness']]
+            self.history_chart = Chart(x_values=x_values, y_values=y_values,
+                                       constants=constants, caption="Generation History",
+                                       width=280, height=130, margin=20, pos=self.CHART_POS)
 
         while not self.is_over():
             self.handle_events()
 
             if self.enable_display:
-                self.update_screen(info=info, history=history)
+                self.update_screen(info=info)
 
             self.on_update()
 

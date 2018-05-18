@@ -132,10 +132,10 @@ class Algorithm:
         sys.stdout.flush()
 
         # add the result to history
-        self.history.append(info)
+        self.history.append(dict(info))
 
         # show the best result in display
-        self.game.show(best_population, info=info, history=dict(self.history))
+        self.game.show(best_population, info=info, history=self.history)
 
     def start(self):
         self.init_population()

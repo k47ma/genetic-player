@@ -1,3 +1,5 @@
+import math
+
 def in_sorted(target, sorted_list):
     """Check if target is in the given sorted list"""
     for ind in range(len(sorted_list)):
@@ -21,3 +23,7 @@ def split_list(a, n):
         else:
             parts.append(a[start_ind:end_ind])
     return parts
+
+def distance(a, b):
+    """Calculate the distance between point a and b"""
+    return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
