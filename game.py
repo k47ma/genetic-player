@@ -5,11 +5,11 @@ from chart import Chart
 from shapes import *
 
 class Game:
-    def __init__(self, obstacle_pos=None, auto_mode=False):
+    def __init__(self, obstacle_pos=None, auto_mode=False, screen_width=640, screen_height=400):
         self._done = False
         self.auto_mode = auto_mode
-        self.SCREEN_WIDTH = 640
-        self.SCREEN_HEIGHT = 400
+        self.SCREEN_WIDTH = screen_width
+        self.SCREEN_HEIGHT = screen_height
 
         # init pygame
         pygame.init()
@@ -57,9 +57,10 @@ class Game:
                 self.screen.blit(info_text, (x, y))
 
     def _draw_history_panel(self):
-        shapes = self.history_chart.get_shapes()
-        for shape in shapes:
-            self._draw_shape(shape)
+        if self.history_chart:
+            shapes = self.history_chart.get_shapes()
+            for shape in shapes:
+                self._draw_shape(shape)
 
     def _draw_shape(self, shape):
         if isinstance(shape, Line):
@@ -112,7 +113,7 @@ class Game:
                 # move right
                 self.field.move("right")
 
-    def update_screen(self, info=None, history=None):
+    def update_screen(self, info=None):
         self.screen.fill(colors.BLACK)
 
         self._draw_field()
@@ -126,13 +127,6 @@ class Game:
     def on_update(self):
         """Things to do when frame get updated"""
         self.field.update()
-
-    def get_score(self, actions):
-        """Create a new game and quickly finish it to get the score"""
-        field = Field(self.SCREEN_WIDTH, self.SCREEN_HEIGHT,
-                      obstacle_pos=self.obstacle_pos, player_actions=actions)
-        score = field.quick_play()
-        return score
 
     def start(self):
         while not self._done:

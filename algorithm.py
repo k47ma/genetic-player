@@ -3,6 +3,7 @@ import random
 import numpy as np
 import multiprocessing as mp
 from game import Game
+from field import Field
 from util import *
 
 class Algorithm:
@@ -25,9 +26,13 @@ class Algorithm:
         self.min_distance = 200
         self.total_jumps = 400
         self.jump_min_distance = 100
-        self.obstacle_pos = [random.randint(i * self.min_distance, (i + 1) * self.min_distance) \
+        self.obstacle_pos = [random.randint(i * self.min_distance, (i + 1) * self.min_distance)
                              for i in range(self.total_obs)]
-        self.game = Game(self.obstacle_pos, auto_mode=True)
+
+        self.SCREEN_WIDTH = 640
+        self.SCREEN_HEIGHT = 400
+        self.game = Game(self.obstacle_pos, auto_mode=True,
+                         screen_width=self.SCREEN_WIDTH, screen_height=self.SCREEN_HEIGHT)
 
     def _pick_parent(self):
         random_ind = random.random()
@@ -46,17 +51,6 @@ class Algorithm:
             population.append(elem)
         self.population = population
 
-    def get_fitness(self, element):
-        score = self.game.get_score(element)
-        return score
-
-    def pop_to_fitness(self, population, queue, process_ind):
-        result = []
-        for pop in population:
-            fitness = self.get_fitness(pop)
-            result.append(fitness)
-        queue.put({"process_ind": process_ind, "data": result})
-
     def update_fitness(self):
         population_parts = split_list(self.population, self.MAX_PROCESS)
         result_queue = mp.Queue()
@@ -64,8 +58,8 @@ class Algorithm:
         # create a new process for each part of the population and calculate the fitness
         processes = []
         for process_ind in range(self.MAX_PROCESS):
-            process = mp.Process(target=self.pop_to_fitness(population_parts[process_ind],
-                                                            result_queue, process_ind))
+            process = mp.Process(target=pop_to_fitness, args=(self.obstacle_pos,
+                                 population_parts[process_ind], result_queue, process_ind))
             process.daemon = True
             processes.append(process)
             process.start()
@@ -150,3 +144,18 @@ class Algorithm:
 
             # crossover and mutate the population list to get the next generation
             self.crossover()
+
+
+def get_fitness(obs, actions):
+    """Create a new game and quickly finish it to get the score"""
+    field = Field(640, 400, obstacle_pos=obs, player_actions=actions)
+    score = field.quick_play()
+    return score
+
+
+def pop_to_fitness(obs, population, queue, process_ind):
+    result = []
+    for pop in population:
+        fitness = get_fitness(obs, pop)
+        result.append(fitness)
+    queue.put({"process_ind": process_ind, "data": result})
