@@ -93,8 +93,6 @@ class Game:
                     # toggle display
                     self.enable_display = not self.enable_display
                     print "Display Mode: {}".format(self.enable_display)
-                    self.screen.fill(colors.BLACK)
-                    pygame.display.flip()
                 if event.key == pygame.K_r and self.is_over():
                     # restart game
                     self.setup_game()
@@ -143,13 +141,18 @@ class Game:
         self.info = info
 
         if history:
-            x_values = [gen_info['Generation'] for gen_info in history]
-            y_values = [gen_info['Highest Fitness'] for gen_info in history]
-            avg_fitness = history[-1]['Average Fitness']
+            x_values = [float(gen_info['Generation']) for gen_info in history]
+            y_values = [float(gen_info['Highest Fitness']) for gen_info in history]
+            highest_fitness = y_values[-1]
+            avg_values = [float(gen_info['Average Fitness']) for gen_info in history]
+            avg_fitness = avg_values[-1]
             self.history_chart = Chart(caption="Generation History",
                                        width=280, height=130, margin=20,
                                        pos=self.CHART_POS)
-            self.history_chart.add_curve(x_values, y_values, label="Highest Fitness")
+            self.history_chart.add_curve(x_values, y_values)
+            self.history_chart.add_curve(x_values, avg_values, color=colors.BLUE)
+            self.history_chart.add_constant(highest_fitness, label="Highest Fitness",
+                                            color=colors.WHITE)
             self.history_chart.add_constant(avg_fitness, label="Average Fitness",
                                             color=colors.BLUE)
 

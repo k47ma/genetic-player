@@ -83,12 +83,12 @@ class Algorithm:
         self.avg_fitness = np.average(self.fitness)
 
         # calculate the fitness weights,
-        #   here we use exponent of fitness for the weight so that elements
+        #   here we use powers of fitness for the weight so that elements
         #   with higher fitness has a much higher possibility to be chosen
         #   in crossover than weak elements
-        exp_fitness = np.multiply(new_fitness, new_fitness)
-        total_fitness = np.sum(exp_fitness)
-        self.fitness_weights = exp_fitness / total_fitness
+        pow_fitness = np.power(new_fitness, 4)
+        total_fitness = np.sum(pow_fitness)
+        self.fitness_weights = pow_fitness / total_fitness
 
     def crossover(self):
         new_population = []
@@ -122,7 +122,7 @@ class Algorithm:
         best_population = self.population[best_ind]
         process_time = "{:.2f}s".format(time.time() - self.last_time)
         info = [("Highest Fitness", best_fitness), ("Population", self.population_size),
-                ("Generation", self.generation), ("Average Fitness", self.avg_fitness),
+                ("Generation", self.generation), ("Average Fitness", "{:.2f}".format(self.avg_fitness)),
                 ("Mutation Rate", self.mutation_rate), ("Process Time", process_time)]
         formatted_info = " | ".join(["{}: {}".format(key, val) for key, val in info])
         sys.stdout.write(formatted_info + "\n")

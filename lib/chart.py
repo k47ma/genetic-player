@@ -148,11 +148,11 @@ class Chart:
                 line = DashLine(constant['color'], (start_x, y), (end_x, y), dash_length=5)
                 shapes.append(line)
 
-            # add label to constant
-            if constant['label']:
-                constant_text = self.label_font.render(constant['label'], True, constant['color'])
-                constant = Text(constant_text, (end_x + 5, y - 3))
-                shapes.append(constant)
+                # add label to constant
+                if constant['label']:
+                    constant_text = self.label_font.render(constant['label'], True, constant['color'])
+                    constant = Text(constant_text, (end_x + 5, y - 3))
+                    shapes.append(constant)
 
         # add caption
         if self.caption:
