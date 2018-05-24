@@ -145,10 +145,13 @@ class Game:
         if history:
             x_values = [gen_info['Generation'] for gen_info in history]
             y_values = [gen_info['Highest Fitness'] for gen_info in history]
-            constants = [history[-1]['Average Fitness']]
-            self.history_chart = Chart(x_values=x_values, y_values=y_values,
-                                       constants=constants, caption="Generation History",
-                                       width=280, height=130, margin=20, pos=self.CHART_POS)
+            avg_fitness = history[-1]['Average Fitness']
+            self.history_chart = Chart(caption="Generation History",
+                                       width=280, height=130, margin=20,
+                                       pos=self.CHART_POS)
+            self.history_chart.add_curve(x_values, y_values, label="Highest Fitness")
+            self.history_chart.add_constant(avg_fitness, label="Average Fitness",
+                                            color=colors.BLUE)
 
         while not self.is_over():
             self.handle_events()
