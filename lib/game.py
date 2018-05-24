@@ -31,6 +31,7 @@ class Game:
         # field and player objects for each game
         self.obstacle_pos = obstacle_pos
         self.field = None
+        self.info = None
         self.history_chart = None
 
         self.setup_game()
@@ -40,7 +41,7 @@ class Game:
         for shape in shapes:
             self._draw_shape(shape)
 
-    def _draw_info_panel(self, info=None):
+    def _draw_info_panel(self):
         x, y = 30, 30
         font_height = self.default_font.get_height()
 
@@ -49,9 +50,9 @@ class Game:
         text = self.info_font.render("Score: {}".format(score), True, colors.WHITE)
         self.screen.blit(text, (x, y))
 
-        # display additional info
-        if info:
-            for key, val in info:
+        # display information
+        if self.info:
+            for key, val in self.info:
                 y += font_height
                 info_text = self.info_font.render("{}: {}".format(key, val), True, colors.WHITE)
                 self.screen.blit(info_text, (x, y))
@@ -113,11 +114,11 @@ class Game:
                 # move right
                 self.field.move("right")
 
-    def update_screen(self, info=None):
+    def update_screen(self):
         self.screen.fill(colors.BLACK)
 
         self._draw_field()
-        self._draw_info_panel(info)
+        self._draw_info_panel()
         if self.history_chart:
             self._draw_history_panel()
 
@@ -139,6 +140,7 @@ class Game:
     def show(self, actions, info=None, history=None):
         self.field = Field(self.SCREEN_WIDTH, self.SCREEN_HEIGHT,
                            obstacle_pos=self.obstacle_pos, player_actions=actions)
+        self.info = info
 
         if history:
             x_values = [gen_info['Generation'] for gen_info in history]
@@ -152,7 +154,7 @@ class Game:
             self.handle_events()
 
             if self.enable_display:
-                self.update_screen(info=info)
+                self.update_screen()
 
             self.on_update()
 

@@ -1,5 +1,6 @@
 import sys
 import random
+import time
 import numpy as np
 import multiprocessing as mp
 from game import Game
@@ -65,8 +66,10 @@ class Algorithm:
             process.start()
 
         # wait until all the processes are done
-        for process in processes:
-            process.join()
+        while result_queue.qsize() < self.MAX_PROCESS:
+            self.game.handle_events()
+            self.game.update_screen()
+            time.sleep(0.05)
 
         # recover the result from queue
         result_list = [result_queue.get() for i in range(self.MAX_PROCESS)]
@@ -117,9 +120,10 @@ class Algorithm:
         best_ind = self.get_best_ind()
         best_fitness = self.fitness[best_ind]
         best_population = self.population[best_ind]
+        process_time = "{:.2f}s".format(time.time() - self.last_time)
         info = [("Highest Fitness", best_fitness), ("Population", self.population_size),
                 ("Generation", self.generation), ("Average Fitness", self.avg_fitness),
-                ("Mutation Rate", self.mutation_rate)]
+                ("Mutation Rate", self.mutation_rate), ("Process Time", process_time)]
         formatted_info = " | ".join(["{}: {}".format(key, val) for key, val in info])
         sys.stdout.write(formatted_info + "\n")
         sys.stdout.flush()
@@ -134,6 +138,8 @@ class Algorithm:
         self.init_population()
 
         while self.generation < self.max_generation:
+            # start new generation
+            self.last_time = time.time()
             self.generation += 1
 
             # calculate the fitness score for each element
