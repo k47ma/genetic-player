@@ -54,6 +54,12 @@ class Player(object):
                 self.curr_height = 0
                 self.on_jump = False
 
+    def is_jumping(self):
+        return bool(self.curr_height)
+
+    def get_pos(self):
+        return self.X, self.Y
+
     def get_shapes(self):
         x = self.X
         y = self.Y - self.HEIGHT - self.curr_height

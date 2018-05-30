@@ -18,6 +18,7 @@ class Field(object):
         self.BLOCK_WIDTH = 10
         self.BLOCK_HEIGHT = 20
         self.MAX_STEP = 40000
+        self.PENALTY = 10.0
 
         # init obstacle positions
         if obstacle_pos is None:
@@ -33,6 +34,10 @@ class Field(object):
         self.PLAYER_X = self.SCREEN_WIDTH * 0.2
         self.player = Player(self.PLAYER_X, self.GROUND_Y, actions=player_actions)
 
+        # boolean for penalty
+        self.new_jump = False
+        self.invalid_jump = False
+
     def update(self):
         """Method to be called when the game frame is updated"""
         self.pos_counter += 1
@@ -44,9 +49,23 @@ class Field(object):
                                 self.BLOCK_HEIGHT)
             self.curr_obstacles.append(new_obs)
 
-        # increment all obstacle positions by 1
+        # decrement all obstacle positions by 1
         for obs in self.curr_obstacles:
             obs.x -= 1
+
+        # calculate penalty
+        if self.player.is_jumping() and not self.new_jump:
+            self.new_jump = True
+            self.invalid_jump = True
+
+        if self.player.get_pos()[0] in [obs.x for obs in self.curr_obstacles]:
+            self.invalid_jump = False
+
+        if not self.player.is_jumping():
+            self.new_jump = False
+            if self.invalid_jump:
+                self.score -= self.PENALTY
+            self.invalid_jump = False
 
         # delete out of range positions
         if self.curr_obstacles and self.curr_obstacles[0].x < -self.BLOCK_WIDTH:

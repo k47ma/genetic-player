@@ -47,7 +47,7 @@ class Game:
 
         # By default, display scores only
         score = self.field.get_score()
-        text = self.info_font.render("Score: {}".format(score), True, colors.WHITE)
+        text = self.info_font.render("Score: {:.1f}".format(score), True, colors.WHITE)
         self.screen.blit(text, (x, y))
 
         # display information
