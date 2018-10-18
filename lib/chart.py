@@ -85,7 +85,7 @@ class Chart:
         anchors = 5
         x_anchor_distance = (x_axis_end[0] - x_axis_start[0] - self.padding) / 5
         y_anchor_distance = (y_axis_end[1] - y_axis_start[1]) / 5
-        x_anchor_offset = (5, -3)
+        x_anchor_offset = (-2, 3)
         y_anchor_offset = (17, 3)
         mid_point = (0, 0)
 
@@ -98,14 +98,16 @@ class Chart:
 
             # add value text for the anchor
             if self.x_range[1] - self.x_range[0]:
-                anchor_value = int(self.x_range[1] * 0.25 * (anchors - 1 - i))
+                anchor_value = int(self.x_range[1] * 0.2 * (anchors - i))
+                if anchor_value == 0:
+                    anchor_value = 1
                 rendered_text = self.digit_font.render(str(anchor_value), True, self.text_color)
-                anchor_text = Text(rendered_text, (end_pos[0] - x_anchor_offset[0], end_pos[1] - x_anchor_offset[1]))
+                anchor_text = Text(rendered_text, (end_pos[0] + x_anchor_offset[0], end_pos[1] + x_anchor_offset[1]))
                 shapes.append(anchor_text)
             elif i == 0:
                 anchor_value = int(self.x_range[1])
                 rendered_text = self.digit_font.render(str(anchor_value), True, self.text_color)
-                anchor_text = Text(rendered_text, (end_pos[0] - x_anchor_offset[0], end_pos[1] - x_anchor_offset[1]))
+                anchor_text = Text(rendered_text, (end_pos[0] + x_anchor_offset[0], end_pos[1] + x_anchor_offset[1]))
                 shapes.append(anchor_text)
 
         # add anchors for y-axis
