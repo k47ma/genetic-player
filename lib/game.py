@@ -148,12 +148,12 @@ class Game:
             avg_fitness = avg_values[-1]
             self.history_chart = Chart(caption="Generation History",
                                        width=280, height=130, margin=20,
-                                       pos=self.CHART_POS)
+                                       pos=self.CHART_POS, x_label="Generation", y_label="Fitness")
             self.history_chart.add_curve(x_values, y_values)
             self.history_chart.add_curve(x_values, avg_values, color=colors.BLUE)
-            self.history_chart.add_constant(highest_fitness, label="Highest Fitness",
+            self.history_chart.add_constant(highest_fitness, label="Highest Fitness {}".format(highest_fitness),
                                             color=colors.WHITE)
-            self.history_chart.add_constant(avg_fitness, label="Average Fitness",
+            self.history_chart.add_constant(avg_fitness, label="Average Fitness {}".format(avg_fitness),
                                             color=colors.BLUE)
 
         while not self.is_over():
